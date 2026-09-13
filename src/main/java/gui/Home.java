@@ -1,7 +1,6 @@
 package gui;
 
 import controller.Controller;
-import eccezioni.DatabaseException;
 import model.*;
 
 import javax.swing.*;
@@ -23,7 +22,7 @@ public class Home {
     private JButton btnVistaRelease;
     private JButton btnVistaRoyalty;
     private JButton btnVistaCampagne;
-
+    private JButton btnVistaDipartimenti;
     private JTable tabellaDati;
 
 
@@ -66,7 +65,7 @@ public class Home {
         btnVistaRelease.addActionListener(e -> caricaTabellaRelease());
         btnVistaRoyalty.addActionListener(e -> caricaTabellaRoyalty());
         btnVistaCampagne.addActionListener(e -> caricaTabellaCampagne());
-
+        btnVistaDipartimenti.addActionListener(e -> caricaTabellaDipartimenti());
 
         //Doppio click per eliminare
         tabellaDati.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -109,6 +108,10 @@ public class Home {
                                         Home.this.controller.eliminaRoyalty(idRecord);
                                         caricaTabellaRoyalty();
                                         break;
+                                    case "Dipartimenti":
+                                        Home.this.controller.eliminaDipartimento(idRecord);
+                                        caricaTabellaDipartimenti();
+                                        break;
                                 }
                                 JOptionPane.showMessageDialog(frameHome, "Eliminazione avvenuta con successo. ", "Successo",  JOptionPane.INFORMATION_MESSAGE);
                             } catch (Exception ex) {
@@ -139,7 +142,7 @@ public class Home {
         vistaAttuale = "Artisti";
         try {
             List<Artista> lista = this.controller.getTuttiGliArtisti();
-            String[] colonne = {"ID", "Nome d'Arte", "Genere", "Manager"};
+            String[] colonne = {"ID", "Nome d'Arte", "Genere", "Data inizio", "Data fine", "Manager"};
             DefaultTableModel tableModel = new DefaultTableModel(colonne, 0) {
                 @Override
                 public boolean isCellEditable(int row, int column) {
@@ -149,7 +152,7 @@ public class Home {
 
             for (Artista a : lista) {
                 String nomeManager = (a.getManager() != null) ? a.getManager().getNome() + " " + a.getManager().getCognome() : "Nessuno";
-                tableModel.addRow(new Object[]{a.getIdArtista(), a.getNomeArte(), a.getGenereMusicale(), nomeManager});
+                tableModel.addRow(new Object[]{a.getIdArtista(), a.getNomeArte(), a.getGenereMusicale(), a.getDataInizioContratto(), a.getDataFineContratto(), nomeManager});
             }
             tabellaDati.setModel(tableModel);
 
@@ -228,7 +231,7 @@ public class Home {
             };
 
             for (RoyaltyReport r : lista) {
-                tableModel.addRow(new Object[]{r.getIdReport(), r.getPeriodoRiferimento(), r.getRicaviTotali(), r.getReleaseRiferimento()});
+                tableModel.addRow(new Object[]{r.getIdReport(), r.getPeriodoRiferimento(), r.getRicaviTotali(), r.getReleaseRiferimento().getCodiceCatalogo()});
             }
             tabellaDati.setModel(tableModel);
 
@@ -250,12 +253,48 @@ public class Home {
             };
 
             for (CampagnaMarketing c : lista) {
-                tableModel.addRow(new Object[]{c.getIdCampagna(), c.getPiattaforma(), c.getCostoStimato(), c.getReleasePromossa(), c.getDipartimentoFinanziatore()});
+                String infoRelease = (c.getReleasePromossa() != null) ? c.getReleasePromossa().getCodiceCatalogo() : "Nessuna";
+                String infoDipartimento = (c.getDipartimentoFinanziatore() != null) ? c.getDipartimentoFinanziatore().getIdDipartimento() : "Nessuno";
+
+                tableModel.addRow(new Object[]{
+                        c.getIdCampagna(),
+                        c.getPiattaforma(),
+                        c.getCostoStimato(),
+                        infoRelease,
+                        infoDipartimento
+                });
             }
             tabellaDati.setModel(tableModel);
 
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(frameHome, "Errore DB Release:\n" + ex.getMessage(), "Errore", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    private void caricaTabellaDipartimenti() {
+        vistaAttuale = "Dipartimenti";
+        try {
+            List<Dipartimento> lista = this.controller.getTuttiIDipartimenti();
+
+            String[] colonne = {"ID Dipartimento", "Nome Dipartimento", "Budget"};
+
+            DefaultTableModel tableModel = new DefaultTableModel(colonne, 0) {
+                @Override
+                public boolean isCellEditable(int row, int column) {
+                    return false;
+                }
+            };
+
+            for (Dipartimento d : lista) {
+                tableModel.addRow(new Object[]{
+                        d.getIdDipartimento(),
+                        d.getNomeDipartimento(),
+                        d.getBudgetAnnuale()
+                });
+            }
+            tabellaDati.setModel(tableModel);
+
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(frameHome, "Errore DB Dipartimenti:\n" + ex.getMessage(), "Errore", JOptionPane.ERROR_MESSAGE);
         }
     }
 

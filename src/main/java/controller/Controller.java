@@ -179,6 +179,11 @@ public class Controller {
         System.out.println("Campagna Marketing eliminata dal DB: " + idCampagna);
     }
 
+    public void eliminaDipartimento(String idDipartimento) throws DatabaseException{
+        dipartimentoDAO.eliminaDipartimento(idDipartimento);
+        System.out.println("Dipartimento eliminato con successo");
+    }
+
     public List<Dipartimento> getTuttiIDipartimenti() throws DatabaseException{
 
         return dipartimentoDAO.getTuttiIDipartimenti();

@@ -48,7 +48,7 @@ public class CampagnaMarketingImplementazionePostgresDAO implements CampagnaMark
     @Override
     public List<CampagnaMarketing> getCampagneMarketing() throws DatabaseException{
         List<CampagnaMarketing> lista = new ArrayList<>();
-        String sql = "SELECT * FROM campagna_marketing";
+        String sql = "SELECT c.*, d.nome_dipartimento FROM campagna_marketing c JOIN dipartimento d ON c.id_dipartimento = d.id_dipartimento";
 
         try (Connection conn = ConnessioneDatabase.getInstance().getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -63,7 +63,8 @@ public class CampagnaMarketingImplementazionePostgresDAO implements CampagnaMark
                 String idDipartimento = rs.getString("id_dipartimento");
 
                 Release releaseAssociata = new Release(codiceRelease, "Titolo Sconosciuto", "", null, "", null);
-                Dipartimento dipartimentoAssociato = new Dipartimento(idDipartimento, "?" ,0.0);
+                String nomeDipartimento = rs.getString("nome_dipartimento");
+                Dipartimento dipartimentoAssociato = new Dipartimento(idDipartimento, nomeDipartimento,0.0);
 
                 CampagnaMarketing campagnaMarketing = new CampagnaMarketing(idCampagna, piattaforma, costoStimato, releaseAssociata, dipartimentoAssociato);
 
@@ -85,7 +86,7 @@ public class CampagnaMarketingImplementazionePostgresDAO implements CampagnaMark
 
             pstmt.setString(1, id);
             int righeEliminate = pstmt.executeUpdate();
-            if (righeEliminate > 0) {
+            if (righeEliminate == 0) {
                 throw  new DatabaseException("Nessuna campagna associata a questo id.");
             }
 

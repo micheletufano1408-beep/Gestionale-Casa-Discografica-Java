@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface DipartimentoDAO {
     List<Dipartimento> getTuttiIDipartimenti() throws DatabaseException;
+    void eliminaDipartimento(String idDipartimento) throws DatabaseException;
 }

@@ -40,4 +40,22 @@ public class DipartimentoImplementazionePostgresDAO implements DipartimentoDAO {
 
         return lista;
     }
-}
+    @Override
+    public void eliminaDipartimento(String idDipartimento) throws DatabaseException{
+        String sql = "DELETE FROM dipartimento WHERE id_dipartimento = ?";
+
+        try (Connection conn = ConnessioneDatabase.getInstance().getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, idDipartimento);
+            int righeEliminate = pstmt.executeUpdate();
+
+            if (righeEliminate == 0) {
+                throw new DatabaseException("Nessun dipartimento trovato con questo ID.");
+            }
+
+        } catch (SQLException e) {
+            throw new DatabaseException("Impossibile eliminare il dipartimento." + e.getMessage());
+        }
+    }
+    }
