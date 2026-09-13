@@ -1,77 +1,116 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="gui.aggiungiRelease">
-  <grid id="27dc6" binding="mainPanel" layout-manager="GridLayoutManager" row-count="8" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="15" vgap="15">
+  <grid id="27dc6" binding="mainPanel" layout-manager="GridLayoutManager" row-count="8" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="15" vgap="15">
     <margin top="25" left="25" bottom="25" right="25"/>
     <constraints>
-      <xy x="20" y="20" width="450" height="400"/>
+      <xy x="20" y="20" width="522" height="426"/>
     </constraints>
     <properties/>
     <border type="none" title="Aggiungi una nuova Release"/>
     <children>
-      
       <component id="lbl1" class="javax.swing.JLabel">
-        <constraints><grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/></constraints>
-        <properties><text value="Codice Catalogo:"/></properties>
+        <constraints>
+          <grid row="0" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Codice Catalogo:"/>
+        </properties>
       </component>
       <component id="c1" class="javax.swing.JTextField" binding="inserisciCodice">
-        <constraints><grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"><preferred-size width="200" height="-1"/></grid></constraints>
+        <constraints>
+          <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="200" height="-1"/>
+          </grid>
+        </constraints>
         <properties/>
       </component>
-
       <component id="lbl2" class="javax.swing.JLabel">
-        <constraints><grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/></constraints>
-        <properties><text value="Titolo:"/></properties>
+        <constraints>
+          <grid row="1" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Titolo:"/>
+        </properties>
       </component>
       <component id="c2" class="javax.swing.JTextField" binding="inserisciTitolo">
-        <constraints><grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"><preferred-size width="200" height="-1"/></grid></constraints>
+        <constraints>
+          <grid row="1" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="200" height="-1"/>
+          </grid>
+        </constraints>
         <properties/>
       </component>
-
       <component id="lbl3" class="javax.swing.JLabel">
-        <constraints><grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/></constraints>
-        <properties><text value="Data Pubblicazione (YYYY-MM-DD):"/></properties>
+        <constraints>
+          <grid row="2" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Data Pubblicazione (YYYY-MM-DD):"/>
+        </properties>
       </component>
       <component id="c3" class="javax.swing.JTextField" binding="inserisciData">
-        <constraints><grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"><preferred-size width="200" height="-1"/></grid></constraints>
+        <constraints>
+          <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="200" height="-1"/>
+          </grid>
+        </constraints>
         <properties/>
       </component>
-
       <component id="lbl4" class="javax.swing.JLabel">
-        <constraints><grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/></constraints>
-        <properties><text value="Formato:"/></properties>
+        <constraints>
+          <grid row="3" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Formato:"/>
+        </properties>
       </component>
       <component id="c4" class="javax.swing.JComboBox" binding="inserisciFormato">
-        <constraints><grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/></constraints>
+        <constraints>
+          <grid row="3" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
         <properties/>
       </component>
-
       <component id="lbl5" class="javax.swing.JLabel">
-        <constraints><grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/></constraints>
-        <properties><text value="Stato:"/></properties>
+        <constraints>
+          <grid row="4" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Stato:"/>
+        </properties>
       </component>
       <component id="c5" class="javax.swing.JComboBox" binding="inserisciStato">
-        <constraints><grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/></constraints>
+        <constraints>
+          <grid row="4" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
         <properties/>
       </component>
-
       <component id="lbl6" class="javax.swing.JLabel">
-        <constraints><grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/></constraints>
-        <properties><text value="Seleziona l'Artista:"/></properties>
+        <constraints>
+          <grid row="5" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Seleziona l'Artista:"/>
+        </properties>
       </component>
       <component id="c6" class="javax.swing.JComboBox" binding="selezionaArtista">
-        <constraints><grid row="5" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/></constraints>
+        <constraints>
+          <grid row="5" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
         <properties/>
       </component>
-
       <vspacer id="vsp1">
-        <constraints><grid row="6" column="0" row-span="1" col-span="2" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/></constraints>
+        <constraints>
+          <grid row="6" column="1" row-span="1" col-span="2" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+        </constraints>
       </vspacer>
-
       <component id="c7" class="javax.swing.JButton" binding="confermaButton">
-        <constraints><grid row="7" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/></constraints>
-        <properties><text value="Conferma e Salva Release"/></properties>
+        <constraints>
+          <grid row="7" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Conferma e Salva Release"/>
+        </properties>
       </component>
-
     </children>
   </grid>
 </form>

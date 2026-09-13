@@ -7,6 +7,8 @@ import java.awt.event.ActionListener;
 import java.time.LocalDate;
 import eccezioni.DatiInvalidiException;
 import eccezioni.DatabaseException;
+import model.Release;
+import java.util.List;
 
 public class aggiungiTecnico {
     private JPanel mainPanel;
@@ -16,6 +18,7 @@ public class aggiungiTecnico {
     private JTextField inserisciCognome;
     private JTextField inserisciDataAssunzione;
     private JTextField inserisciRuolo;
+    private JComboBox<String> inserisciRelease;
 
     private Controller controller;
     private JFrame frame;
@@ -36,6 +39,15 @@ public class aggiungiTecnico {
                 frameHome.setVisible(true);
             }
         });
+        inserisciRelease.addItem("Nessuna");
+        try {
+            List<Release> tutteLeRelease = controller.getTutteLeRelease();
+            for (Release r : tutteLeRelease) {
+                inserisciRelease.addItem(r.getCodiceCatalogo() + " - " + r.getTitolo());
+            }
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, "Errore caricamento Release: " + ex.getMessage());
+        }
         aggiungiTecnicoButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -56,7 +68,14 @@ public class aggiungiTecnico {
             LocalDate data = LocalDate.parse(inserisciDataAssunzione.getText());
             String ruolo = inserisciRuolo.getText();
 
-            controller.registraNuovoTecnico(id, nome, cognome, data, ruolo);
+            String releaseSelezionata = (String) inserisciRelease.getSelectedItem();
+            String codiceRelease = null;
+
+            if (releaseSelezionata != null && !releaseSelezionata.equals("Nessuna")) {
+                codiceRelease = releaseSelezionata.split(" - ")[0];
+            }
+
+            controller.registraNuovoTecnico(id, nome, cognome, data, ruolo, codiceRelease);
 
             JOptionPane.showMessageDialog(mainPanel, "Tecnico " + nome + " " + cognome + " assunto con successo!", "Successo", JOptionPane.INFORMATION_MESSAGE);
 

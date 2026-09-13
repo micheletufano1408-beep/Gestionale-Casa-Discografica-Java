@@ -6,6 +6,7 @@ import eccezioni.DatabaseException;
 import model.Artista;
 import model.Release;
 
+import model.Tecnico;
 import org.postgresql.util.PSQLException;
 import java.sql.Connection;
 import java.sql.Date;
@@ -20,7 +21,6 @@ public class ReleaseImplementazionePostgresDAO implements ReleaseDAO {
 
     @Override
     public void salvaRelease(Release release) throws DatabaseException{
-
         String sql = "INSERT INTO release (codice_catalogo, titolo, tipo_formato, data_pubblicazione, stato, id_artista) VALUES (?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = ConnessioneDatabase.getInstance().getConnection();
@@ -31,23 +31,11 @@ public class ReleaseImplementazionePostgresDAO implements ReleaseDAO {
             pstmt.setString(3, release.getTipoFormato());
             pstmt.setDate(4, Date.valueOf(release.getDataPubblicazione()));
             pstmt.setString(5, release.getStato());
-
             pstmt.setString(6, release.getArtista().getIdArtista());
 
             pstmt.executeUpdate();
-
-
         } catch (SQLException e) {
-            String messaggioPulito = e.getMessage();
-
-            if (e instanceof PSQLException) {
-                PSQLException pgEx = (PSQLException) e;
-                if (pgEx.getServerErrorMessage() != null) {
-                    messaggioPulito = pgEx.getServerErrorMessage().getMessage();
-                }
-            }
-
-            throw new DatabaseException("Impossibile salvare la release.\n" + messaggioPulito);
+            throw new DatabaseException("Impossibile salvare la release.\n" + e.getMessage());
         }
     }
 
@@ -74,9 +62,12 @@ public class ReleaseImplementazionePostgresDAO implements ReleaseDAO {
                 String nomeArte = rs.getString("nome_arte");
                 String genere = rs.getString("genere_musicale");
 
+
+
+
                 Artista artista = new Artista(idArtista, nomeArte, genere, LocalDate.now(), LocalDate.now(), null);
 
-                Release release = new Release(codice, titolo, formato, dataPubb, stato, artista);
+                Release release = new Release(codice, titolo, formato, dataPubb, stato, artista, new ArrayList<Tecnico>());
                 listaRelease.add(release);
             }
 
@@ -104,7 +95,8 @@ public class ReleaseImplementazionePostgresDAO implements ReleaseDAO {
                         rs.getString("tipo_formato"),
                         rs.getDate("data_pubblicazione").toLocalDate(),
                         rs.getString("stato"),
-                        null
+                        null,
+                        new ArrayList<Tecnico>()
                 );
                 listaRelease.add(r);
             }

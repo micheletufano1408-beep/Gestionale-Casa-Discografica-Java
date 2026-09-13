@@ -7,6 +7,7 @@ import model.CampagnaMarketing;
 
 import model.Dipartimento;
 import model.Release;
+import model.Tecnico;
 import org.postgresql.util.PSQLException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -62,7 +63,7 @@ public class CampagnaMarketingImplementazionePostgresDAO implements CampagnaMark
                 String codiceRelease = rs.getString("codice_release");
                 String idDipartimento = rs.getString("id_dipartimento");
 
-                Release releaseAssociata = new Release(codiceRelease, "Titolo Sconosciuto", "", null, "", null);
+                Release releaseAssociata = new Release(codiceRelease, "Titolo Sconosciuto", "", null, "", null, new ArrayList<Tecnico>());
                 String nomeDipartimento = rs.getString("nome_dipartimento");
                 Dipartimento dipartimentoAssociato = new Dipartimento(idDipartimento, nomeDipartimento,0.0);
 

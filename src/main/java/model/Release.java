@@ -12,16 +12,18 @@ public class Release {
     private String stato;
 
     private Artista artista;
+    private List<Tecnico> tecnici;
 
 
 
-    public Release(String codiceCatalogo, String titolo, String tipoFormato, LocalDate dataPubblicazione, String stato, Artista artista) {
+    public Release(String codiceCatalogo, String titolo, String tipoFormato, LocalDate dataPubblicazione, String stato, Artista artista, List<Tecnico> tecnici) {
         this.codiceCatalogo = codiceCatalogo;
         this.titolo = titolo;
         this.tipoFormato = tipoFormato;
         this.dataPubblicazione = dataPubblicazione;
         this.stato = stato;
         this.artista = artista;
+        this.tecnici = tecnici;
 
     }
 
@@ -42,6 +44,9 @@ public class Release {
 
     public Artista getArtista() { return artista; }
     public void setArtista(Artista artista) { this.artista = artista; }
+
+    public List<Tecnico> getTecnici() { return tecnici; }
+    public void setTecnici(List<Tecnico> tecnici){this.tecnici = tecnici;}
 
 
     @Override

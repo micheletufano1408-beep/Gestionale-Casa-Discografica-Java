@@ -16,7 +16,7 @@ public class TecnicoImplementazionePostgresDAO implements TecnicoDAO {
 
     @Override
     public void salvaTecnico(Tecnico tecnico) throws DatabaseException {
-        String sql = "INSERT INTO tecnico (id_dipendente, nome, cognome, data_assunzione, ruolo_specializzato) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO tecnico (id_dipendente, nome, cognome, data_assunzione, ruolo_specializzato, codice_release) VALUES (?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = ConnessioneDatabase.getInstance().getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -26,6 +26,12 @@ public class TecnicoImplementazionePostgresDAO implements TecnicoDAO {
             pstmt.setString(3, tecnico.getCognome());
             pstmt.setDate(4, Date.valueOf(tecnico.getDataAssunzione()));
             pstmt.setString(5, tecnico.getRuoloSpecializzato());
+
+            if (tecnico.getReleaseAssegnata() != null && tecnico.getReleaseAssegnata().getCodiceCatalogo() != null) {
+                pstmt.setString(6, tecnico.getReleaseAssegnata().getCodiceCatalogo());
+            } else {
+                pstmt.setNull(6, java.sql.Types.VARCHAR);
+            }
 
             pstmt.executeUpdate();
 
@@ -50,7 +56,7 @@ public class TecnicoImplementazionePostgresDAO implements TecnicoDAO {
                 LocalDate dataAssunzione = rs.getDate("data_assunzione").toLocalDate();
                 String ruoloSpecializzato = rs.getString("ruolo_specializzato");
 
-                Tecnico tecnico = new Tecnico(id, nome, cognome, dataAssunzione, ruoloSpecializzato);
+                Tecnico tecnico = new Tecnico(id, nome, cognome, dataAssunzione, ruoloSpecializzato, null);
                 listaTecnici.add(tecnico);
             }
 

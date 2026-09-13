@@ -53,7 +53,7 @@ public class RoyaltyReportImplementazionePostgresDAO implements RoyaltyReportDAO
                 String releaseRiferimento = rs.getString("codice_release");
 
 
-                Release releaseAssociata = new Release(releaseRiferimento, "Titolo Sconosciuto", "", null, "", null);
+                Release releaseAssociata = new Release(releaseRiferimento, "Titolo Sconosciuto", "", null, "", null, new ArrayList<Tecnico>());
 
                 RoyaltyReport royaltyReport = new RoyaltyReport(idReport, periodoRiferimento, ricaviTotali, releaseAssociata);
 

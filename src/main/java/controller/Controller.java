@@ -8,6 +8,7 @@ import implementazionePostgresDAO.UtenteImplementazionePostgresDAO;
 import model.*;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.ArrayList;
 
 
 public class Controller {
@@ -81,12 +82,16 @@ public class Controller {
         System.out.println("Manager eliminato dal DB: " + idDipendente);
     }
     // METODI PER TECNICI
-    public void registraNuovoTecnico(String id, String nome, String cognome, LocalDate dataAssunzione, String ruoloSpecializzato) throws DatabaseException, DatiInvalidiException {
+    public void registraNuovoTecnico(String id, String nome, String cognome, LocalDate dataAssunzione, String ruoloSpecializzato, String codiceRelease) throws DatabaseException, DatiInvalidiException {
         if (id == null || id.trim().isEmpty() || nome == null || nome.trim().isEmpty() || cognome == null || cognome.trim().isEmpty() || ruoloSpecializzato == null || ruoloSpecializzato.trim().isEmpty()) {
             throw new DatiInvalidiException("Tutti i dati del tecnico sono obbligatori.");
         }
+        Release releaseAssociata = null;
+        if (codiceRelease != null) {
+            releaseAssociata = new Release(codiceRelease, "", "", null, "", null, new ArrayList<>());
+        }
 
-        Tecnico nuovoTecnico = new model.Tecnico(id, nome, cognome, dataAssunzione, ruoloSpecializzato);
+        Tecnico nuovoTecnico = new model.Tecnico(id, nome, cognome, dataAssunzione, ruoloSpecializzato, releaseAssociata);
 
         tecnicoDAO.salvaTecnico(nuovoTecnico);
 
@@ -104,7 +109,7 @@ public class Controller {
         if (codice == null || codice.trim().isEmpty() || artista == null || titolo == null || titolo.trim().isEmpty() || tipoFormato == null || tipoFormato.trim().isEmpty() || dataPubblicazione == null || stato == null || stato.trim().isEmpty()) {
             throw new DatiInvalidiException("Tutti i dettagli della release sono campi obbligatori.");
         }
-        Release nuovaRelease = new Release(codice, titolo, tipoFormato, dataPubblicazione, stato, artista);
+        Release nuovaRelease = new Release(codice, titolo, tipoFormato, dataPubblicazione, stato, artista, new ArrayList<Tecnico>());
         releaseDAO.salvaRelease(nuovaRelease);
 
         System.out.println("Release registrata: " + titolo + " dell'artista " + artista.getNomeArte());
