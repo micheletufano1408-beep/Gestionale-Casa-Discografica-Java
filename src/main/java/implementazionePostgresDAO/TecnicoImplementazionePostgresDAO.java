@@ -108,4 +108,24 @@ public class TecnicoImplementazionePostgresDAO implements TecnicoDAO {
         }
         return lista;
     }
+    @Override
+    public void assegnaRelease(String idTecnico, String codiceRelease) throws DatabaseException {
+        String sql = "UPDATE tecnico SET codice_release = ? WHERE id_dipendente = ?";
+
+        try (Connection conn = ConnessioneDatabase.getInstance().getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            if (codiceRelease != null) {
+                pstmt.setString(1, codiceRelease);
+            } else {
+                pstmt.setNull(1, java.sql.Types.VARCHAR);
+            }
+            pstmt.setString(2, idTecnico);
+
+            pstmt.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new DatabaseException("Errore durante l'assegnazione della release: " + e.getMessage());
+        }
+    }
 }

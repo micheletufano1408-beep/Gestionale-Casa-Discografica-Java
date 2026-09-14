@@ -111,6 +111,10 @@ public class Controller {
         tecnicoDAO.eliminaTecnico(idDipendente);
         System.out.println("Tecnico eliminato dal DB: " + idDipendente);
     }
+    public void assegnaReleaseATecnico(String idTecnico, String codiceRelease) throws DatabaseException {
+        tecnicoDAO.assegnaRelease(idTecnico, codiceRelease);
+        System.out.println("Release " + codiceRelease + " assegnata al tecnico " + idTecnico);
+    }
     //METODI PER RELEASE
     public void registraNuovaRelease(String codice, String titolo, String tipoFormato, LocalDate dataPubblicazione, String stato, Artista artista) throws DatabaseException, DatiInvalidiException {
         if (codice == null || codice.trim().isEmpty() || artista == null || titolo == null || titolo.trim().isEmpty() || tipoFormato == null || tipoFormato.trim().isEmpty() || dataPubblicazione == null || stato == null || stato.trim().isEmpty()) {

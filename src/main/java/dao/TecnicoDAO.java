@@ -9,4 +9,5 @@ public interface TecnicoDAO {
     List<Tecnico>getTuttiITecnici() throws DatabaseException;
     void eliminaTecnico(String idTecnico) throws DatabaseException;
     List<Tecnico> getTecniciDiRelease(String codiceRelease) throws DatabaseException;
+    void assegnaRelease(String idTecnico, String codiceRelease) throws DatabaseException;
 }

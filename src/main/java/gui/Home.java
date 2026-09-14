@@ -71,7 +71,8 @@ public class Home {
         tabellaDati.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
-                //Doppio click sinistro
+
+                // --- 1. GESTIONE DOPPIO CLICK SINISTRO ---
                 if (SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 2) {
                     int riga = tabellaDati.rowAtPoint(e.getPoint());
                     if (riga != -1) {
@@ -82,11 +83,17 @@ public class Home {
                             String idArtista = tabellaDati.getValueAt(riga, 0).toString();
                             String nomeArtista = tabellaDati.getValueAt(riga, 1).toString();
                             mostraDialogAssegnaManager(idArtista, nomeArtista);
+                        } else if ("Personale".equals(vistaAttuale)) {
+                            String ruoloPersonale = tabellaDati.getValueAt(riga, 1).toString();
+                            if ("Tecnico".equals(ruoloPersonale)) {
+                                String idTecnico = tabellaDati.getValueAt(riga, 0).toString();
+                                String nomeTecnico = "ID: " + idTecnico;
+                                mostraDialogAssegnaRelease(idTecnico, nomeTecnico);
+                            }
                         }
                     }
                 }
 
-                //Click destro per elimanare
                 if (SwingUtilities.isRightMouseButton(e)) {
                     int riga = tabellaDati.rowAtPoint(e.getPoint());
                     if (riga >= 0 && riga < tabellaDati.getRowCount()) {
@@ -389,5 +396,37 @@ public class Home {
             JOptionPane.showMessageDialog(frameHome, "Errore durante l'assegnazione:\n" + ex.getMessage(), "Errore", JOptionPane.ERROR_MESSAGE);
         }
     }
+private void mostraDialogAssegnaRelease(String idTecnico, String nomeTecnico) {
+    try {
+        List<Release> listaRelease = controller.getTutteLeRelease();
+        JComboBox<String> tendinaRelease = new JComboBox<>();
+
+        tendinaRelease.addItem("Nessuna (Rimuovi assegnazione attuale)");
+
+        for (Release r : listaRelease) {
+            tendinaRelease.addItem(r.getCodiceCatalogo() + " - " + r.getTitolo());
+        }
+
+        int scelta = JOptionPane.showConfirmDialog(frameHome, tendinaRelease,
+                "Assegna Release al tecnico: " + nomeTecnico,
+                JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+        if (scelta == JOptionPane.OK_OPTION) {
+            String releaseSelezionata = (String) tendinaRelease.getSelectedItem();
+            String codiceRelease = null;
+
+            if (releaseSelezionata != null && !releaseSelezionata.startsWith("Nessuna")) {
+                codiceRelease = releaseSelezionata.split(" - ")[0];
+            }
+
+            controller.assegnaReleaseATecnico(idTecnico, codiceRelease);
+
+            JOptionPane.showMessageDialog(frameHome, "Assegnazione aggiornata con successo!", "Successo", JOptionPane.INFORMATION_MESSAGE);
+            caricaTabellaPersonale();
+        }
+    } catch (Exception ex) {
+        JOptionPane.showMessageDialog(frameHome, "Errore durante l'assegnazione:\n" + ex.getMessage(), "Errore", JOptionPane.ERROR_MESSAGE);
+    }
+}
 
 }
