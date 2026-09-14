@@ -83,4 +83,29 @@ public class TecnicoImplementazionePostgresDAO implements TecnicoDAO {
             throw new DatabaseException("Errore durante l'eliminazione del tecnico: " + e.getMessage());
         }
     }
+    @Override
+    public List<Tecnico> getTecniciDiRelease(String codiceRelease) throws DatabaseException {
+        List<Tecnico> lista = new ArrayList<>();
+        String sql = "SELECT * FROM tecnico WHERE codice_release = ?";
+
+        try (Connection conn = ConnessioneDatabase.getInstance().getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, codiceRelease);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    String id = rs.getString("id_dipendente");
+                    String nome = rs.getString("nome");
+                    String cognome = rs.getString("cognome");
+                    LocalDate data = rs.getDate("data_assunzione").toLocalDate();
+                    String ruolo = rs.getString("ruolo_specializzato");
+
+                    lista.add(new Tecnico(id, nome, cognome, data, ruolo, null));
+                }
+            }
+        } catch (SQLException e) {
+            throw new DatabaseException("Errore durante il recupero dei tecnici della release: " + e.getMessage());
+        }
+        return lista;
+    }
 }

@@ -58,6 +58,10 @@ public class Controller {
 
         return artistaDAO.getTuttiGliArtisti();
     }
+    public void assegnaManagerAdArtista(String idArtista, String idManager) throws DatabaseException {
+        artistaDAO.assegnaManager(idArtista, idManager);
+        System.out.println("Manager " + idManager + " assegnato all'artista " + idArtista);
+    }
 
     //METODI PER MANAGER
     public void registraNuovoManager(String id, String nome, String cognome, LocalDate dataAssunzione, Double bonus) throws DatabaseException, DatiInvalidiException{
@@ -99,6 +103,9 @@ public class Controller {
     }
     public List<Tecnico> getTuttiITecnici() throws DatabaseException {
         return tecnicoDAO.getTuttiITecnici();
+    }
+    public List<Tecnico> getTecniciDiRelease(String codiceRelease) throws DatabaseException {
+        return tecnicoDAO.getTecniciDiRelease(codiceRelease);
     }
     public void eliminaTecnico(String idDipendente) throws DatabaseException {
         tecnicoDAO.eliminaTecnico(idDipendente);

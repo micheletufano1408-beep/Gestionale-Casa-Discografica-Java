@@ -67,15 +67,38 @@ public class Home {
         btnVistaCampagne.addActionListener(e -> caricaTabellaCampagne());
         btnVistaDipartimenti.addActionListener(e -> caricaTabellaDipartimenti());
 
-        //Doppio click per eliminare
+        //Metodo per i click del mouse
         tabellaDati.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
-                if (e.getClickCount() == 2) {
+                //Doppio click sinistro
+                if (SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 2) {
+                    int riga = tabellaDati.rowAtPoint(e.getPoint());
+                    if (riga != -1) {
+                        if ("Release".equals(vistaAttuale)) {
+                            String codiceRelease = tabellaDati.getValueAt(riga, 0).toString();
+                            mostraDettagliRelease(codiceRelease);
+                        } else if ("Artisti".equals(vistaAttuale)) {
+                            String idArtista = tabellaDati.getValueAt(riga, 0).toString();
+                            String nomeArtista = tabellaDati.getValueAt(riga, 1).toString();
+                            mostraDialogAssegnaManager(idArtista, nomeArtista);
+                        }
+                    }
+                }
+
+                //Click destro per elimanare
+                if (SwingUtilities.isRightMouseButton(e)) {
+                    int riga = tabellaDati.rowAtPoint(e.getPoint());
+                    if (riga >= 0 && riga < tabellaDati.getRowCount()) {
+                        tabellaDati.setRowSelectionInterval(riga, riga);
+                    } else {
+                        tabellaDati.clearSelection();
+                    }
+
                     int rigaSelezionata = tabellaDati.getSelectedRow();
+
                     if (rigaSelezionata != -1) {
                         String idRecord = tabellaDati.getValueAt(rigaSelezionata, 0).toString();
-                        String infoRecord = tabellaDati.getValueAt(rigaSelezionata, 1).toString();
 
                         int scelta = JOptionPane.showConfirmDialog(frameHome, "Sei sicuro di voler eliminare il record selezionato dal database?\nQuesta operazione è irreversibile.",
                                 "Conferma Eliminazione", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
@@ -295,6 +318,75 @@ public class Home {
 
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(frameHome, "Errore DB Dipartimenti:\n" + ex.getMessage(), "Errore", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    //Metodi per mostrare dettagli
+    private void mostraDettagliRelease(String codiceRelease) {
+        try {
+            Release releaseSelezionata = null;
+            for (Release r : controller.getTutteLeRelease()) {
+                if (r.getCodiceCatalogo().equals(codiceRelease)) {
+                    releaseSelezionata = r;
+                    break;
+                }
+            }
+
+            if (releaseSelezionata == null) return;
+
+            List<Tecnico> tecnici = controller.getTecniciDiRelease(codiceRelease);
+
+            StringBuilder info = new StringBuilder();
+            info.append(" TITOLO RELEASE: ").append(releaseSelezionata.getTitolo()).append("\n");
+            info.append(" ARTISTA: ").append(releaseSelezionata.getArtista().getNomeArte()).append("\n");
+            info.append(" DATA PUBBLICAZIONE: ").append(releaseSelezionata.getDataPubblicazione()).append("\n");
+            info.append("--------------------------------------------------\n");
+            info.append(" TECNICI CHE HANNO LAVORATO ALLA RELEASE:\n");
+
+            if (tecnici.isEmpty()) {
+                info.append("   (Nessun tecnico assegnato attualmente)\n");
+            } else {
+                for (Tecnico t : tecnici) {
+                    info.append("   • ").append(t.getNome()).append(" ").append(t.getCognome())
+                            .append("  [").append(t.getRuoloSpecializzato()).append("]\n");
+                }
+            }
+
+            JOptionPane.showMessageDialog(frameHome, info.toString(), "Dettagli Release - " + codiceRelease, JOptionPane.INFORMATION_MESSAGE);
+
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(frameHome, "Errore nel caricamento dei dettagli:\n" + ex.getMessage(), "Errore", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    private void mostraDialogAssegnaManager(String idArtista, String nomeArtista) {
+        try {
+            List<Manager> listaManager = controller.getTuttiIManager();
+            JComboBox<String> tendinaManager = new JComboBox<>();
+
+            tendinaManager.addItem("Nessuno (Rimuovi Manager attuale)");
+
+            for (Manager m : listaManager) {
+                tendinaManager.addItem(m.getIdDipendente() + " - " + m.getNome() + " " + m.getCognome());
+            }
+
+            int scelta = JOptionPane.showConfirmDialog(frameHome, tendinaManager,
+                    "Scegli il nuovo Manager per " + nomeArtista,
+                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+            if (scelta == JOptionPane.OK_OPTION) {
+                String managerSelezionato = (String) tendinaManager.getSelectedItem();
+                String idManager = null;
+
+                if (managerSelezionato != null && !managerSelezionato.startsWith("Nessuno")) {
+                    idManager = managerSelezionato.split(" - ")[0];
+                }
+
+                controller.assegnaManagerAdArtista(idArtista, idManager);
+
+                JOptionPane.showMessageDialog(frameHome, "Manager aggiornato con successo!", "Successo", JOptionPane.INFORMATION_MESSAGE);
+                caricaTabellaArtisti();
+            }
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(frameHome, "Errore durante l'assegnazione:\n" + ex.getMessage(), "Errore", JOptionPane.ERROR_MESSAGE);
         }
     }
 

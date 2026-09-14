@@ -109,4 +109,19 @@ public class ArtistaImplementazionePostgresDAO implements ArtistaDAO {
             throw new DatabaseException("Impossibile eliminare l'artista. Potrebbe avere delle Release collegate.\n" + e.getMessage());
         }
     }
+    @Override
+    public void assegnaManager(String idArtista, String idManager) throws DatabaseException {
+        String sql = "UPDATE artista SET id_manager = ? WHERE id_artista = ?";
+
+        try (Connection conn = ConnessioneDatabase.getInstance().getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, idManager);
+            pstmt.setString(2, idArtista);
+            pstmt.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new DatabaseException("Errore durante l'assegnazione del manager: " + e.getMessage());
+        }
+    }
 }
