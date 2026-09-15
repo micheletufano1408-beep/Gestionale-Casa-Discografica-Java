@@ -159,23 +159,12 @@ public class Controller {
 
     // METODI PER CAMPAGNE MARKETING
     public void registraCampagnaMarketing(String id, String piattaforma, Double costo, Dipartimento dipartimento, Release release) throws BudgetException, DatabaseException, DatiInvalidiException{
+        if (id == null || id.trim().isEmpty() || piattaforma == null || piattaforma.trim().isEmpty() || costo == null || dipartimento == null || release == null) {
+            throw new DatiInvalidiException("Tutti i dati della campagna di marketing sono obbligatori!");
+        }
+
         if (costo > dipartimento.getBudgetAnnuale()) {
             throw new BudgetException("Il costo della campagna (" + costo + "€) supera il budget disponibile del dipartimento (" + dipartimento.getBudgetAnnuale() + "€).");
-        }
-        if (id == null || id.trim().isEmpty()){
-            throw new DatiInvalidiException("L'ID della campagna di marketing è obbligatorio!");
-        }
-        if (piattaforma == null || piattaforma.trim().isEmpty()){
-            throw new DatiInvalidiException("La piattaforma della campagna di marketing è obbligatorio!");
-        }
-        if (costo == null){
-            throw new DatiInvalidiException("Il costo della campagna di marketing è obbligatorio!");
-        }
-        if (dipartimento == null){
-            throw new DatiInvalidiException("Il dipartimento della campagna di marketing è obbligatorio!");
-        }
-        if (release == null){
-            throw new DatiInvalidiException("La release della campagna di marketing è obbligatorio!");
         }
 
         CampagnaMarketing nuovaCampagna = new CampagnaMarketing(id, piattaforma, costo, release, dipartimento);

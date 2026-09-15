@@ -16,7 +16,7 @@ public class UtenteImplementazionePostgresDAO implements UtenteDAO {
 
         String query = "SELECT * FROM utente WHERE username = ? AND password = ?";
 
-
+//blocco try per "provare" la connessione al database
         try (Connection conn = ConnessioneDatabase.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 

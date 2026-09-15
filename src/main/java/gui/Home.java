@@ -72,7 +72,7 @@ public class Home {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
 
-                // --- 1. GESTIONE DOPPIO CLICK SINISTRO ---
+                // Gestione doppio click sinistro
                 if (SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 2) {
                     int riga = tabellaDati.rowAtPoint(e.getPoint());
                     if (riga != -1) {
