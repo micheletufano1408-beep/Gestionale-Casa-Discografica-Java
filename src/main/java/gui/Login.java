@@ -4,11 +4,16 @@ import controller.Controller;
 import eccezioni.DatabaseException;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class Login {
+    private JPanel mainPanel;
+    private JTextField inserisciUsername;
+    private JPasswordField inserisciPassword;
+    private JButton accediButton;
+    private JButton btnRegistrati;
+
     private JFrame frame;
     private Controller controller;
 
@@ -18,51 +23,19 @@ public class Login {
     }
 
     private void inizializzaGUI() {
-
         frame = new JFrame("Login di Sistema");
+        frame.setContentPane(mainPanel);
         frame.setSize(400, 300);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
 
-
-        JPanel mainPanel = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 10, 10, 10);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-
-
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        mainPanel.add(new JLabel("Username:"), gbc);
-
-        gbc.gridx = 1;
-        gbc.gridy = 0;
-        JTextField campoUsername = new JTextField(15);
-        mainPanel.add(campoUsername, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        mainPanel.add(new JLabel("Password:"), gbc);
-
-        gbc.gridx = 1;
-        gbc.gridy = 1;
-        JPasswordField campoPassword = new JPasswordField(15);
-        mainPanel.add(campoPassword, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        gbc.gridwidth = 2;
-        JButton accediButton = new JButton("Accedi");
-        mainPanel.add(accediButton, gbc);
-
         frame.getRootPane().setDefaultButton(accediButton);
-
 
         accediButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String user = campoUsername.getText();
-                String pass = new String(campoPassword.getPassword());
+                String user = inserisciUsername.getText();
+                String pass = new String(inserisciPassword.getPassword());
 
                 try {
                     if (controller.effettuaLogin(user, pass)) {
@@ -71,14 +44,36 @@ public class Login {
                     } else {
                         JOptionPane.showMessageDialog(frame, "Username o password errati!", "Credenziali errate", JOptionPane.WARNING_MESSAGE);
                     }
-                }
-                catch (DatabaseException ex) {
-                    JOptionPane.showMessageDialog(frame, "Impossibile collegarsi al server.\nControlla che il database sia acceso.\nDettaglio: " + ex.getMessage(), "Errore di Connessione", JOptionPane.ERROR_MESSAGE);
+                } catch (DatabaseException ex) {
+                    JOptionPane.showMessageDialog(frame, "Impossibile collegarsi al server.\nDettaglio: " + ex.getMessage(), "Errore di Connessione", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
 
-        frame.setContentPane(mainPanel);
+        btnRegistrati.addActionListener(e -> {
+            JTextField usernameField = new JTextField();
+            JPasswordField passwordField = new JPasswordField();
+
+            Object[] message = {
+                    "Scegli un Username:", usernameField,
+                    "Scegli una Password:", passwordField
+            };
+
+            int opzione = JOptionPane.showConfirmDialog(frame, message, "Registrazione Nuovo Account", JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE);
+
+            if (opzione == JOptionPane.OK_OPTION) {
+                String nuovoUser = usernameField.getText();
+                String nuovaPass = new String(passwordField.getPassword());
+
+                try {
+                    controller.registraUtente(nuovoUser, nuovaPass);
+                    JOptionPane.showMessageDialog(frame, "Account creato con successo!\nOra puoi effettuare l'accesso.", "Successo", JOptionPane.INFORMATION_MESSAGE);
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(frame, ex.getMessage(), "Errore Registrazione", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+
         frame.setVisible(true);
     }
 }

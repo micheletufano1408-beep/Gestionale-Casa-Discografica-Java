@@ -204,8 +204,14 @@ public class Controller {
 
         return dipartimentoDAO.getTuttiIDipartimenti();
     }
-
+//Metodi per utente
     public boolean effettuaLogin(String username, String password) throws DatabaseException{
         return utenteDAO.verificaLogin(username, password);
+    }
+    public void registraUtente(String username, String password) throws DatabaseException, DatiInvalidiException {
+        if (username == null || username.trim().isEmpty() || password == null || password.trim().isEmpty()) {
+            throw new DatiInvalidiException("Username e Password non possono essere vuoti.");
+        }
+        utenteDAO.registraNuovoUtente(username, password);
     }
 }
