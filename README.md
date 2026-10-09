@@ -19,6 +19,7 @@ Per testare il progetto:
 
 
 
+```mermaid
 erDiagram
     MANAGER {
         varchar id_dipendente PK
@@ -85,4 +86,4 @@ erDiagram
     RELEASE ||--o{ ROYALTY_REPORT : "genera"
     RELEASE ||--o{ TECNICO_RELEASE : "coinvolge"
     TECNICO ||--o{ TECNICO_RELEASE : "lavora a"
-    RELEASE ||--o{ TECNICO : "ha tecnico principale"
+    RELEASE ||--o{ TECNICO : "ha tecnico principale"ale"
