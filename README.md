@@ -86,4 +86,5 @@ erDiagram
     RELEASE ||--o{ ROYALTY_REPORT : "genera"
     RELEASE ||--o{ TECNICO_RELEASE : "coinvolge"
     TECNICO ||--o{ TECNICO_RELEASE : "lavora a"
-    RELEASE ||--o{ TECNICO : "ha tecnico principale"ale"
+    RELEASE ||--o{ TECNICO : "ha tecnico principale"
+```
