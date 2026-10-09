@@ -1,0 +1,549 @@
+--
+-- PostgreSQL database dump
+--
+
+\restrict hhqQhyIXa13ktPD3bseyfzJFHlf7cuksYlFD24HvKgsmWzN7IbYffVBMz9b8OFM
+
+-- Dumped from database version 18.3
+-- Dumped by pg_dump version 18.3
+
+-- Started on 2026-10-09 06:15:13
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET transaction_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- TOC entry 228 (class 1255 OID 16508)
+-- Name: check_budget_dipartimento(); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.check_budget_dipartimento() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    budget_totale NUMERIC;
+    costo_campagne_esistenti NUMERIC;
+BEGIN
+    SELECT budget_annuale INTO budget_totale
+    FROM dipartimento
+    WHERE id_dipartimento = NEW.id_dipartimento;
+
+    SELECT COALESCE(SUM(costo_stimato), 0) INTO costo_campagne_esistenti
+    FROM campagna_marketing
+    WHERE id_dipartimento = NEW.id_dipartimento
+      AND id_campagna != NEW.id_campagna; 
+
+    IF (costo_campagne_esistenti + NEW.costo_stimato) > budget_totale THEN
+        RAISE EXCEPTION 'Budget insufficiente! Il costo della campagna supera il budget rimanente del dipartimento.';
+    END IF;
+
+    RETURN NEW;
+END;
+$$;
+
+
+ALTER FUNCTION public.check_budget_dipartimento() OWNER TO postgres;
+
+--
+-- TOC entry 229 (class 1255 OID 16509)
+-- Name: check_date_contratto_artista(); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.check_date_contratto_artista() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    IF NEW.data_fine_contratto <= NEW.data_inizio_contratto THEN
+        RAISE EXCEPTION 'Errore: La data di fine contratto deve essere successiva alla data di inizio!';
+    END IF;
+    
+    RETURN NEW;
+END;
+$$;
+
+
+ALTER FUNCTION public.check_date_contratto_artista() OWNER TO postgres;
+
+--
+-- TOC entry 230 (class 1255 OID 16510)
+-- Name: check_release_contratto_artista(); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.check_release_contratto_artista() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    inizio_contratto DATE;
+    fine_contratto DATE;
+BEGIN
+    SELECT data_inizio_contratto, data_fine_contratto
+    INTO inizio_contratto, fine_contratto
+    FROM artista
+    WHERE id_artista = NEW.id_artista;
+
+    IF NEW.data_pubblicazione > fine_contratto THEN
+        RAISE EXCEPTION 'Errore: Impossibile pubblicare. Il contratto dell''artista risulta scaduto in questa data.';
+    END IF;
+
+    IF NEW.data_pubblicazione < inizio_contratto THEN
+        RAISE EXCEPTION 'Errore: Impossibile pubblicare. La release è precedente all''inizio del contratto.';
+    END IF;
+
+    RETURN NEW;
+END;
+$$;
+
+
+ALTER FUNCTION public.check_release_contratto_artista() OWNER TO postgres;
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- TOC entry 219 (class 1259 OID 16511)
+-- Name: artista; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.artista (
+    id_artista character varying(50) NOT NULL,
+    nome_arte character varying(100) NOT NULL,
+    genere_musicale character varying(50) NOT NULL,
+    data_inizio_contratto date NOT NULL,
+    data_fine_contratto date NOT NULL,
+    id_manager character varying(50)
+);
+
+
+ALTER TABLE public.artista OWNER TO postgres;
+
+--
+-- TOC entry 220 (class 1259 OID 16520)
+-- Name: campagna_marketing; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.campagna_marketing (
+    id_campagna character varying(50) NOT NULL,
+    piattaforma character varying(100) NOT NULL,
+    costo_stimato numeric(15,2) NOT NULL,
+    id_dipartimento character varying(50),
+    codice_release character varying(50)
+);
+
+
+ALTER TABLE public.campagna_marketing OWNER TO postgres;
+
+--
+-- TOC entry 221 (class 1259 OID 16528)
+-- Name: dipartimento; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.dipartimento (
+    id_dipartimento character varying(50) NOT NULL,
+    nome_dipartimento character varying(100) NOT NULL,
+    budget_annuale numeric(15,2) NOT NULL
+);
+
+
+ALTER TABLE public.dipartimento OWNER TO postgres;
+
+--
+-- TOC entry 222 (class 1259 OID 16534)
+-- Name: manager; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.manager (
+    id_dipendente character varying(50) NOT NULL,
+    nome character varying(50) NOT NULL,
+    cognome character varying(50) NOT NULL,
+    data_assunzione date NOT NULL,
+    bonus_percentuale numeric(5,2) NOT NULL
+);
+
+
+ALTER TABLE public.manager OWNER TO postgres;
+
+--
+-- TOC entry 223 (class 1259 OID 16542)
+-- Name: release; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.release (
+    codice_catalogo character varying(50) NOT NULL,
+    titolo character varying(100) NOT NULL,
+    tipo_formato character varying(50) NOT NULL,
+    data_pubblicazione date NOT NULL,
+    stato character varying(50) NOT NULL,
+    id_artista character varying(50)
+);
+
+
+ALTER TABLE public.release OWNER TO postgres;
+
+--
+-- TOC entry 224 (class 1259 OID 16551)
+-- Name: royalty_report; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.royalty_report (
+    id_report character varying(50) NOT NULL,
+    periodo_riferimento character varying(50) NOT NULL,
+    ricavi_totali numeric(15,2) NOT NULL,
+    codice_release character varying(50)
+);
+
+
+ALTER TABLE public.royalty_report OWNER TO postgres;
+
+--
+-- TOC entry 225 (class 1259 OID 16558)
+-- Name: tecnico; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.tecnico (
+    id_dipendente character varying(50) NOT NULL,
+    nome character varying(50) NOT NULL,
+    cognome character varying(50) NOT NULL,
+    data_assunzione date NOT NULL,
+    ruolo_specializzato character varying(100) NOT NULL,
+    codice_release character varying(255)
+);
+
+
+ALTER TABLE public.tecnico OWNER TO postgres;
+
+--
+-- TOC entry 226 (class 1259 OID 16566)
+-- Name: tecnico_release; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.tecnico_release (
+    id_tecnico character varying(50) NOT NULL,
+    codice_release character varying(50) NOT NULL
+);
+
+
+ALTER TABLE public.tecnico_release OWNER TO postgres;
+
+--
+-- TOC entry 227 (class 1259 OID 16571)
+-- Name: utente; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.utente (
+    username character varying(50) NOT NULL,
+    password character varying(255) NOT NULL
+);
+
+
+ALTER TABLE public.utente OWNER TO postgres;
+
+--
+-- TOC entry 5066 (class 0 OID 16511)
+-- Dependencies: 219
+-- Data for Name: artista; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.artista (id_artista, nome_arte, genere_musicale, data_inizio_contratto, data_fine_contratto, id_manager) FROM stdin;
+A002	Kaliog	Trap Napoletana	2026-08-13	2027-08-13	M001
+A003	Sig.Versace	Rap Napoletano	2026-06-10	2027-06-10	M003
+A004	Chinga	Trap Italo Maghrebina	2026-04-10	2027-04-10	M003
+A001	Smalls	Rap Napoletano	2026-06-13	2027-06-13	M001
+A006	Clementino	Rap Napolenato	2026-09-15	2027-09-15	M003
+\.
+
+
+--
+-- TOC entry 5067 (class 0 OID 16520)
+-- Dependencies: 220
+-- Data for Name: campagna_marketing; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.campagna_marketing (id_campagna, piattaforma, costo_stimato, id_dipartimento, codice_release) FROM stdin;
+C001	Spotify	100.00	D01	R001
+C002	Spotify	40000.00	D01	R002
+C006	Spotify	10000.00	D02	R001
+\.
+
+
+--
+-- TOC entry 5068 (class 0 OID 16528)
+-- Dependencies: 221
+-- Data for Name: dipartimento; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.dipartimento (id_dipartimento, nome_dipartimento, budget_annuale) FROM stdin;
+D02	Eventi Live	65000.00
+D01	Marketing Digitale	9900.00
+\.
+
+
+--
+-- TOC entry 5069 (class 0 OID 16534)
+-- Dependencies: 222
+-- Data for Name: manager; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.manager (id_dipendente, nome, cognome, data_assunzione, bonus_percentuale) FROM stdin;
+M001	Antonio 	De Lucia	2026-09-14	5.00
+M003	Michele	Tufano	2026-02-20	10.00
+\.
+
+
+--
+-- TOC entry 5070 (class 0 OID 16542)
+-- Dependencies: 223
+-- Data for Name: release; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.release (codice_catalogo, titolo, tipo_formato, data_pubblicazione, stato, id_artista) FROM stdin;
+R001	Santos	Singolo	2026-08-15	Rilasciato	A001
+R002	Clan	Singolo	2026-09-18	In lavorazione	A002
+R003	100 Gocce	Singolo	2026-05-10	Rilasciato	A004
+R004	Rass Freestyle	Singolo	2026-07-10	Rilasciato	A003
+R005	Bel-Air	Singolo	2026-09-02	Rilasciato	A003
+CA0005	ciccio	Singolo	2026-09-15	Rilasciato	A006
+\.
+
+
+--
+-- TOC entry 5071 (class 0 OID 16551)
+-- Dependencies: 224
+-- Data for Name: royalty_report; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.royalty_report (id_report, periodo_riferimento, ricavi_totali, codice_release) FROM stdin;
+\.
+
+
+--
+-- TOC entry 5072 (class 0 OID 16558)
+-- Dependencies: 225
+-- Data for Name: tecnico; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.tecnico (id_dipendente, nome, cognome, data_assunzione, ruolo_specializzato, codice_release) FROM stdin;
+V001	Giovanni 	Piscitelli	2026-02-20	Video Maker	R001
+P002	Simone 	Palladino	2026-02-20	Beatmaker	R005
+P001	Giovanni Pio	Nuzzo	2026-02-20	Beatmaker & Sound Engineer	R005
+\.
+
+
+--
+-- TOC entry 5073 (class 0 OID 16566)
+-- Dependencies: 226
+-- Data for Name: tecnico_release; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.tecnico_release (id_tecnico, codice_release) FROM stdin;
+\.
+
+
+--
+-- TOC entry 5074 (class 0 OID 16571)
+-- Dependencies: 227
+-- Data for Name: utente; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.utente (username, password) FROM stdin;
+admin	admin
+Michele	12345
+Gionuzzo	Mammarella
+Piscitelligio	Cavani2013
+\.
+
+
+--
+-- TOC entry 4891 (class 2606 OID 16577)
+-- Name: artista artista_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.artista
+    ADD CONSTRAINT artista_pkey PRIMARY KEY (id_artista);
+
+
+--
+-- TOC entry 4893 (class 2606 OID 16579)
+-- Name: campagna_marketing campagna_marketing_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.campagna_marketing
+    ADD CONSTRAINT campagna_marketing_pkey PRIMARY KEY (id_campagna);
+
+
+--
+-- TOC entry 4895 (class 2606 OID 16581)
+-- Name: dipartimento dipartimento_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.dipartimento
+    ADD CONSTRAINT dipartimento_pkey PRIMARY KEY (id_dipartimento);
+
+
+--
+-- TOC entry 4897 (class 2606 OID 16583)
+-- Name: manager manager_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.manager
+    ADD CONSTRAINT manager_pkey PRIMARY KEY (id_dipendente);
+
+
+--
+-- TOC entry 4899 (class 2606 OID 16585)
+-- Name: release release_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.release
+    ADD CONSTRAINT release_pkey PRIMARY KEY (codice_catalogo);
+
+
+--
+-- TOC entry 4901 (class 2606 OID 16587)
+-- Name: royalty_report royalty_report_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.royalty_report
+    ADD CONSTRAINT royalty_report_pkey PRIMARY KEY (id_report);
+
+
+--
+-- TOC entry 4903 (class 2606 OID 16589)
+-- Name: tecnico tecnico_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.tecnico
+    ADD CONSTRAINT tecnico_pkey PRIMARY KEY (id_dipendente);
+
+
+--
+-- TOC entry 4905 (class 2606 OID 16591)
+-- Name: tecnico_release tecnico_release_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.tecnico_release
+    ADD CONSTRAINT tecnico_release_pkey PRIMARY KEY (id_tecnico, codice_release);
+
+
+--
+-- TOC entry 4907 (class 2606 OID 16593)
+-- Name: utente utente_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.utente
+    ADD CONSTRAINT utente_pkey PRIMARY KEY (username);
+
+
+--
+-- TOC entry 4917 (class 2620 OID 16594)
+-- Name: campagna_marketing trigger_check_budget; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER trigger_check_budget BEFORE INSERT OR UPDATE ON public.campagna_marketing FOR EACH ROW EXECUTE FUNCTION public.check_budget_dipartimento();
+
+
+--
+-- TOC entry 4916 (class 2620 OID 16595)
+-- Name: artista trigger_check_date_artista; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER trigger_check_date_artista BEFORE INSERT OR UPDATE ON public.artista FOR EACH ROW EXECUTE FUNCTION public.check_date_contratto_artista();
+
+
+--
+-- TOC entry 4918 (class 2620 OID 16596)
+-- Name: release trigger_check_release_contratto; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER trigger_check_release_contratto BEFORE INSERT OR UPDATE ON public.release FOR EACH ROW EXECUTE FUNCTION public.check_release_contratto_artista();
+
+
+--
+-- TOC entry 4911 (class 2606 OID 16644)
+-- Name: release fk_artista_setnull; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.release
+    ADD CONSTRAINT fk_artista_setnull FOREIGN KEY (id_artista) REFERENCES public.artista(id_artista) ON DELETE SET NULL;
+
+
+--
+-- TOC entry 4909 (class 2606 OID 16659)
+-- Name: campagna_marketing fk_campagna_rel_setnull; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.campagna_marketing
+    ADD CONSTRAINT fk_campagna_rel_setnull FOREIGN KEY (codice_release) REFERENCES public.release(codice_catalogo) ON DELETE SET NULL;
+
+
+--
+-- TOC entry 4910 (class 2606 OID 16649)
+-- Name: campagna_marketing fk_dipartimento_setnull; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.campagna_marketing
+    ADD CONSTRAINT fk_dipartimento_setnull FOREIGN KEY (id_dipartimento) REFERENCES public.dipartimento(id_dipartimento) ON DELETE SET NULL;
+
+
+--
+-- TOC entry 4908 (class 2606 OID 16639)
+-- Name: artista fk_manager_setnull; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.artista
+    ADD CONSTRAINT fk_manager_setnull FOREIGN KEY (id_manager) REFERENCES public.manager(id_dipendente) ON DELETE SET NULL;
+
+
+--
+-- TOC entry 4914 (class 2606 OID 16612)
+-- Name: tecnico_release fk_ponte_release; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.tecnico_release
+    ADD CONSTRAINT fk_ponte_release FOREIGN KEY (codice_release) REFERENCES public.release(codice_catalogo);
+
+
+--
+-- TOC entry 4915 (class 2606 OID 16617)
+-- Name: tecnico_release fk_ponte_tecnico; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.tecnico_release
+    ADD CONSTRAINT fk_ponte_tecnico FOREIGN KEY (id_tecnico) REFERENCES public.tecnico(id_dipendente);
+
+
+--
+-- TOC entry 4912 (class 2606 OID 16664)
+-- Name: royalty_report fk_royalty_rel_setnull; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.royalty_report
+    ADD CONSTRAINT fk_royalty_rel_setnull FOREIGN KEY (codice_release) REFERENCES public.release(codice_catalogo) ON DELETE SET NULL;
+
+
+--
+-- TOC entry 4913 (class 2606 OID 16654)
+-- Name: tecnico fk_tecnico_rel_setnull; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.tecnico
+    ADD CONSTRAINT fk_tecnico_rel_setnull FOREIGN KEY (codice_release) REFERENCES public.release(codice_catalogo) ON DELETE SET NULL;
+
+
+-- Completed on 2026-10-09 06:15:13
+
+--
+-- PostgreSQL database dump complete
+--
+
+\unrestrict hhqQhyIXa13ktPD3bseyfzJFHlf7cuksYlFD24HvKgsmWzN7IbYffVBMz9b8OFM
+
