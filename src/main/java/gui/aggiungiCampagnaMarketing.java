@@ -83,6 +83,7 @@ public class aggiungiCampagnaMarketing {
             JOptionPane.showMessageDialog(mainPanel, "Campagna registrata con successo!", "Successo", JOptionPane.INFORMATION_MESSAGE);
 
             frameHome.setVisible(true);
+
             frame.dispose();
 
         }

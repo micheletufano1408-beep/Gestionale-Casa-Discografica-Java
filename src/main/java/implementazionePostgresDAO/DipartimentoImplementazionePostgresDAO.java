@@ -58,4 +58,19 @@ public class DipartimentoImplementazionePostgresDAO implements DipartimentoDAO {
             throw new DatabaseException("Impossibile eliminare il dipartimento." + e.getMessage());
         }
     }
+    @Override
+    public void aggiornaBudgetDipartimento(String idDipartimento, Double nuovoBudget) throws DatabaseException {
+        String sql = "UPDATE dipartimento SET budget_annuale = ? WHERE id_dipartimento = ?";
+
+        try (Connection conn = ConnessioneDatabase.getInstance().getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setDouble(1, nuovoBudget);
+            pstmt.setString(2, idDipartimento);
+            pstmt.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new DatabaseException("Impossibile aggiornare il budget del dipartimento.\n" + e.getMessage());
+        }
+    }
     }

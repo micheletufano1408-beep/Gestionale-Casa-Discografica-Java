@@ -1,6 +1,8 @@
 package gui;
 
 import controller.Controller;
+import eccezioni.DatabaseException;
+import eccezioni.DatiInvalidiException;
 import model.*;
 
 import javax.swing.*;
@@ -144,9 +146,9 @@ public class Home {
                                         break;
                                 }
                                 JOptionPane.showMessageDialog(frameHome, "Eliminazione avvenuta con successo. ", "Successo",  JOptionPane.INFORMATION_MESSAGE);
-                            } catch (Exception ex) {
+                            } catch (DatabaseException ex) {
                                 JOptionPane.showMessageDialog(frameHome,
-                                        "Impossibile eliminare il record.\nVerifica che non sia collegato ad altri dati (Vincolo di Chiave Esterna).\n" + ex.getMessage(),
+                                        "Impossibile eliminare il record.\nVerifica che non sia collegato ad altri dati.\n" + ex.getMessage(),
                                         "Errore DB",
                                         JOptionPane.ERROR_MESSAGE);
                             }
@@ -162,6 +164,32 @@ public class Home {
         frameHome.pack();
         frameHome.setLocationRelativeTo(null);
         frameHome.setVisible(true);
+
+        frameHome.addComponentListener(new java.awt.event.ComponentAdapter() {
+            @Override
+            public void componentShown(java.awt.event.ComponentEvent e) {
+                switch (vistaAttuale) {
+                    case "Dipartimenti":
+                        caricaTabellaDipartimenti();
+                        break;
+                    case "Campagne Marketing":
+                        caricaTabellaCampagne();
+                        break;
+                    case "Artisti":
+                        caricaTabellaArtisti();
+                        break;
+                    case "Personale":
+                        caricaTabellaPersonale();
+                        break;
+                    case "Release":
+                        caricaTabellaRelease();
+                        break;
+                    case "Royalty Report":
+                        caricaTabellaRoyalty();
+                        break;
+                }
+            }
+        });
 
         caricaTabellaArtisti();
     }
@@ -186,7 +214,7 @@ public class Home {
             }
             tabellaDati.setModel(tableModel);
 
-        } catch (Exception ex) {
+        } catch (DatabaseException ex) {
             JOptionPane.showMessageDialog(frameHome, "Errore DB Artisti:\n" + ex.getMessage(), "Errore", JOptionPane.ERROR_MESSAGE);
         }
     }
@@ -221,7 +249,7 @@ public class Home {
 
             tabellaDati.setModel(tableModel);
 
-        } catch (Exception ex) {
+        } catch (DatabaseException ex) {
             JOptionPane.showMessageDialog(frameHome, "Errore DB Personale:\n" + ex.getMessage(), "Errore", JOptionPane.ERROR_MESSAGE);
         }
     }
@@ -243,7 +271,7 @@ public class Home {
             }
             tabellaDati.setModel(tableModel);
 
-        } catch (Exception ex) {
+        } catch (DatabaseException ex) {
             JOptionPane.showMessageDialog(frameHome, "Errore DB Release:\n" + ex.getMessage(), "Errore", JOptionPane.ERROR_MESSAGE);
         }
     }
@@ -265,7 +293,7 @@ public class Home {
             }
             tabellaDati.setModel(tableModel);
 
-        } catch (Exception ex) {
+        } catch (DatabaseException ex) {
             JOptionPane.showMessageDialog(frameHome, "Errore DB Release:\n" + ex.getMessage(), "Errore", JOptionPane.ERROR_MESSAGE);
         }
     }
@@ -296,7 +324,7 @@ public class Home {
             }
             tabellaDati.setModel(tableModel);
 
-        } catch (Exception ex) {
+        } catch (DatabaseException ex) {
             JOptionPane.showMessageDialog(frameHome, "Errore DB Release:\n" + ex.getMessage(), "Errore", JOptionPane.ERROR_MESSAGE);
         }
     }
@@ -323,7 +351,7 @@ public class Home {
             }
             tabellaDati.setModel(tableModel);
 
-        } catch (Exception ex) {
+        } catch (DatabaseException ex) {
             JOptionPane.showMessageDialog(frameHome, "Errore DB Dipartimenti:\n" + ex.getMessage(), "Errore", JOptionPane.ERROR_MESSAGE);
         }
     }
@@ -360,7 +388,7 @@ public class Home {
 
             JOptionPane.showMessageDialog(frameHome, info.toString(), "Dettagli Release - " + codiceRelease, JOptionPane.INFORMATION_MESSAGE);
 
-        } catch (Exception ex) {
+        } catch (DatabaseException ex) {
             JOptionPane.showMessageDialog(frameHome, "Errore nel caricamento dei dettagli:\n" + ex.getMessage(), "Errore", JOptionPane.ERROR_MESSAGE);
         }
     }
@@ -392,7 +420,7 @@ public class Home {
                 JOptionPane.showMessageDialog(frameHome, "Manager aggiornato con successo!", "Successo", JOptionPane.INFORMATION_MESSAGE);
                 caricaTabellaArtisti();
             }
-        } catch (Exception ex) {
+        } catch (DatabaseException ex) {
             JOptionPane.showMessageDialog(frameHome, "Errore durante l'assegnazione:\n" + ex.getMessage(), "Errore", JOptionPane.ERROR_MESSAGE);
         }
     }
@@ -424,7 +452,7 @@ private void mostraDialogAssegnaRelease(String idTecnico, String nomeTecnico) {
             JOptionPane.showMessageDialog(frameHome, "Assegnazione aggiornata con successo!", "Successo", JOptionPane.INFORMATION_MESSAGE);
             caricaTabellaPersonale();
         }
-    } catch (Exception ex) {
+    } catch (DatabaseException ex) {
         JOptionPane.showMessageDialog(frameHome, "Errore durante l'assegnazione:\n" + ex.getMessage(), "Errore", JOptionPane.ERROR_MESSAGE);
     }
 }

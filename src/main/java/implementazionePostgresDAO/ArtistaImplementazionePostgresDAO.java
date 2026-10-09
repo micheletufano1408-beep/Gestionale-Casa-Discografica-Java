@@ -4,6 +4,7 @@ import dao.ArtistaDAO;
 import database.ConnessioneDatabase;
 import eccezioni.DatabaseException;
 import model.Artista;
+import model.Manager;
 import org.postgresql.util.PSQLException;
 
 import java.sql.*;
@@ -70,7 +71,7 @@ public class ArtistaImplementazionePostgresDAO implements ArtistaDAO {
                 LocalDate dataFine = rs.getDate("data_fine_contratto").toLocalDate();
 
                 String idManager = rs.getString("id_manager");
-                model.Manager manager = null;
+                Manager manager = null;
 
                 if (idManager != null) {
                     String mgrNome = rs.getString("mgr_nome");

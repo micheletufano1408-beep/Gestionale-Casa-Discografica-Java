@@ -65,7 +65,7 @@ public class CampagnaMarketingImplementazionePostgresDAO implements CampagnaMark
 
                 Release releaseAssociata = new Release(codiceRelease, "Titolo Sconosciuto", "", null, "", null, new ArrayList<Tecnico>());
                 String nomeDipartimento = rs.getString("nome_dipartimento");
-                Dipartimento dipartimentoAssociato = new Dipartimento(idDipartimento, nomeDipartimento,0.0);
+                Dipartimento dipartimentoAssociato = new Dipartimento(idDipartimento, nomeDipartimento, 0.0);
 
                 CampagnaMarketing campagnaMarketing = new CampagnaMarketing(idCampagna, piattaforma, costoStimato, releaseAssociata, dipartimentoAssociato);
 

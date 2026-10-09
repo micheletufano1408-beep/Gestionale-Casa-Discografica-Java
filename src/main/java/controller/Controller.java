@@ -172,7 +172,9 @@ public class Controller {
         campagnaMarketingDAO.salvaCampagnaMarketing(nuovaCampagna);
 
         Double nuovoBudget = dipartimento.getBudgetAnnuale() - costo;
-        dipartimento.setBudgetAnnuale(nuovoBudget);
+        dipartimento.setBudgetAnnuale(nuovoBudget); // Aggiorna in memoria RAM
+
+        dipartimentoDAO.aggiornaBudgetDipartimento(dipartimento.getIdDipartimento(), nuovoBudget);
 
         System.out.println("Campagna Registrata! Nuovo budget dipartimento: " + dipartimento.getBudgetAnnuale());
     }
